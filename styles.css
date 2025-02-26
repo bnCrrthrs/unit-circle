@@ -12,16 +12,17 @@ html {
 
 body {
   height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
+/* 
 #container {
   width: min(90vw, 90vh);
   height: min(90vw, 90vh);
   background-color: blue;
-}
+} */
 
 #canvas {
   display: block;
