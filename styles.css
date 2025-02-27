@@ -58,3 +58,29 @@ body {
   background-color: #22feb0;
   border-radius: 10px;
 }
+
+#results {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 12rem 22rem;
+  top: 0;
+  left: 0;
+  min-width: max-content;
+  /* width: 35rem; */
+  margin: 1.2rem;
+  padding: 1.2rem;
+  background-color: #f8fffd;
+  border-radius: 0.8rem;
+}
+
+.lblName {
+  text-align: right;
+  font-size: 1.6rem;
+  padding: 0.4rem;
+}
+
+.lblValue {
+  font-family: monospace;
+  font-size: 1.6rem;
+  padding: 0.4rem;
+}
