@@ -127,19 +127,35 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // angle line
+  // angle line to tan
+  // ctx.strokeStyle = "#D3CED1";
+  // ctx.beginPath();
+  // ctx.moveTo(radius * cos, radius * sin);
+  // ctx.lineTo(radius * cosAbs, Math.abs(radius * tan) * sinAbs);
+  // ctx.lineTo(Math.abs(radius * cot) * cosAbs, radius * sinAbs);
+  // ctx.closePath();
+  // ctx.stroke();
+
+  // angle to tan
+  ctx.strokeStyle = "#D3CED1";
   ctx.beginPath();
   ctx.moveTo(0, 0);
-  ctx.lineTo(radius * cos, radius * sin);
+  ctx.lineTo(radius, radius * tan);
   ctx.closePath();
   ctx.stroke();
 
-  // angle line to tan
-  ctx.strokeStyle = "#D3CED1";
+  //angle to cot
   ctx.beginPath();
-  ctx.moveTo(radius * cos, radius * sin);
-  ctx.lineTo(radius * cosAbs, Math.abs(radius * tan) * sinAbs);
-  ctx.lineTo(Math.abs(radius * cot) * cosAbs, radius * sinAbs);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(radius * cot, radius);
+  ctx.closePath();
+  ctx.stroke();
+
+  // main angle line
+  ctx.strokeStyle = "#220919";
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(radius * cos, radius * sin);
   ctx.closePath();
   ctx.stroke();
 
@@ -207,19 +223,35 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // tangent height
+  // tangent length
+  // ctx.strokeStyle = "#EEA243";
+  // ctx.beginPath();
+  // ctx.moveTo(radius * cosAbs, 0);
+  // ctx.lineTo(radius * cosAbs, Math.abs(tan * radius) * sinAbs);
+  // ctx.closePath();
+  // ctx.stroke();
+
+  // tangent length
   ctx.strokeStyle = "#EEA243";
   ctx.beginPath();
-  ctx.moveTo(radius * cosAbs, 0);
-  ctx.lineTo(radius * cosAbs, Math.abs(tan * radius) * sinAbs);
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(radius, radius * tan);
   ctx.closePath();
   ctx.stroke();
 
-  // cotan width
+  // cotan length
+  // ctx.strokeStyle = "#EEA243";
+  // ctx.beginPath();
+  // ctx.moveTo(0, radius * sinAbs);
+  // ctx.lineTo(Math.abs(cot * radius) * cosAbs, radius * sinAbs);
+  // ctx.closePath();
+  // ctx.stroke();
+
+  // cotan length
   ctx.strokeStyle = "#EEA243";
   ctx.beginPath();
-  ctx.moveTo(0, radius * sinAbs);
-  ctx.lineTo(Math.abs(cot * radius) * cosAbs, radius * sinAbs);
+  ctx.moveTo(0, radius);
+  ctx.lineTo(radius * cot, radius);
   ctx.closePath();
   ctx.stroke();
 
@@ -263,20 +295,36 @@ function drawCircle() {
   ctx.fillText(`csc ≈ ${roundNumber(csc)}`, 0, 0);
   ctx.restore();
 
+  // ctx.save();
+  // ctx.scale(1, -1);
+  // const tanLblY = Math.max(Math.min((-cosAbs * radius * tan) / 2, heightExtent - 60), -heightExtent + 60);
+  // ctx.translate((radius + 12) * cosAbs, tanLblY);
+  // ctx.rotate((cosAbs * Math.PI) / 2);
+  // ctx.strokeText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
+  // ctx.fillText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
+  // ctx.restore();
+
   ctx.save();
   ctx.scale(1, -1);
-  const tanLblY = Math.max(Math.min((-cosAbs * radius * tan) / 2, heightExtent - 60), -heightExtent + 60);
-  ctx.translate((radius + 12) * cosAbs, tanLblY);
-  ctx.rotate((cosAbs * Math.PI) / 2);
+  const tanLblY = Math.min(Math.max((radius * -tan) / 2, -heightExtent + 60), heightExtent - 60);
+  ctx.translate(radius + 12, tanLblY);
+  ctx.rotate(Math.PI / 2);
   ctx.strokeText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
   ctx.fillText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
   ctx.restore();
 
+  // ctx.save();
+  // ctx.scale(1, -1);
+  // const cotLblX = Math.max(Math.min((cosAbs * Math.abs(radius * cot)) / 2, widthExtent - 60), -widthExtent + 60);
+  // ctx.strokeText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
+  // ctx.fillText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
+  // ctx.restore();
+
   ctx.save();
   ctx.scale(1, -1);
-  const cotLblX = Math.max(Math.min((cosAbs * Math.abs(radius * cot)) / 2, widthExtent - 60), -widthExtent + 60);
-  ctx.strokeText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
-  ctx.fillText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
+  const cotLblX = Math.max(Math.min((radius * cot) / 2, widthExtent - 60), -widthExtent + 60);
+  ctx.strokeText(`cot ≈ ${roundNumber(cot)}`, cotLblX, -radius - 10);
+  ctx.fillText(`cot ≈ ${roundNumber(cot)}`, cotLblX, -radius - 10);
   ctx.restore();
 }
 
