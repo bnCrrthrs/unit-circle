@@ -359,9 +359,8 @@ function updateDetails(angle) {
   const cos = Math.cos(mainAngle);
   const tan = Math.sin(mainAngle);
   const { radius } = getSize();
+  positionHandle(mainAngle);
   drawCircle();
-
-  // console.log(`sin: ${Math.sin(mainAngle)}\ncos: ${Math.cos(mainAngle)}\ntan: ${Math.tan(mainAngle)}`);
 }
 
 function updateCircle() {
@@ -369,10 +368,36 @@ function updateCircle() {
   positionHandle(mainAngle);
 }
 
+function keyHandle(e) {
+  const { shiftKey, metaKey, key } = e;
+  switch (key) {
+    case "ArrowDown":
+      incDown(shiftKey, metaKey);
+      break;
+    case "ArrowUp":
+      incUp(shiftKey, metaKey);
+      break;
+  }
+}
+
+function incUp(shift, meta) {
+  const multiplier = shift ? 0.1 : meta ? 3 : 1;
+  const inc = (multiplier * Math.PI) / 180;
+  updateDetails(mainAngle + inc);
+}
+
+function incDown(shift, meta) {
+  const multiplier = shift ? 0.1 : meta ? 3 : 1;
+  const inc = (multiplier * Math.PI) / 180;
+  updateDetails(mainAngle - inc);
+}
+
 window.addEventListener("mousemove", getAngleFromMouse);
 window.addEventListener("mouseup", putMouseUp);
 handle.addEventListener("mousedown", putMouseDown);
 window.addEventListener("resize", updateCircle);
+
+document.addEventListener("keydown", keyHandle);
 
 function putMouseUp() {
   mousedown = false;
