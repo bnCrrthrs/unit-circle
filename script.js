@@ -114,15 +114,6 @@ function drawCircle() {
   ctx.closePath();
   ctx.fill();
 
-  // angle line to tan
-  // ctx.strokeStyle = "#D3CED1";
-  // ctx.beginPath();
-  // ctx.moveTo(radius * cos, radius * sin);
-  // ctx.lineTo(radius * cosAbs, Math.abs(radius * tan) * sinAbs);
-  // ctx.lineTo(Math.abs(radius * cot) * cosAbs, radius * sinAbs);
-  // ctx.closePath();
-  // ctx.stroke();
-
   // angle to tan
   ctx.strokeStyle = "#D3CED1";
   ctx.beginPath();
@@ -171,13 +162,6 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // ctx.strokeStyle = "#5E239D";
-  // ctx.beginPath();
-  // ctx.moveTo(radius * cos, radius * sin - 1);
-  // ctx.lineTo(secX, sinAbs * radius - 1);
-  // ctx.closePath();
-  // ctx.stroke();
-
   // sec
   ctx.strokeStyle = "#5E239D";
   ctx.beginPath();
@@ -210,14 +194,6 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // tangent
-  // ctx.strokeStyle = "#FF66B3";
-  // ctx.beginPath();
-  // ctx.moveTo(radius * cos, radius * sin);
-  // ctx.lineTo(radius * tanX, 0);
-  // ctx.closePath();
-  // ctx.stroke();
-
   // tangent line
   ctx.strokeStyle = "#02A9EA";
   ctx.beginPath();
@@ -227,28 +203,12 @@ function drawCircle() {
   ctx.stroke();
 
   // tangent length
-  // ctx.strokeStyle = "#EEA243";
-  // ctx.beginPath();
-  // ctx.moveTo(radius * cosAbs, 0);
-  // ctx.lineTo(radius * cosAbs, Math.abs(tan * radius) * sinAbs);
-  // ctx.closePath();
-  // ctx.stroke();
-
-  // tangent length
   ctx.strokeStyle = "#EEA243";
   ctx.beginPath();
   ctx.moveTo(radius, 0);
   ctx.lineTo(radius, radius * tan);
   ctx.closePath();
   ctx.stroke();
-
-  // cotan length
-  // ctx.strokeStyle = "#EEA243";
-  // ctx.beginPath();
-  // ctx.moveTo(0, radius * sinAbs);
-  // ctx.lineTo(Math.abs(cot * radius) * cosAbs, radius * sinAbs);
-  // ctx.closePath();
-  // ctx.stroke();
 
   // cotan length
   ctx.strokeStyle = "#EEA243";
@@ -270,9 +230,14 @@ function drawCircle() {
   ctx.textBaseline = "middle";
   ctx.textAlign = "center";
 
+  // mini tan annotation
   ctx.save();
   ctx.scale(1, -1);
   ctx.translate((radius * (sec + cos)) / 2, -(radius * sin) / 2);
+  // ctx.translate(
+  //   Math.min((radius * (sec + cos)) / 2, widthExtent - 10),
+  //   Math.min(-(radius * sin) / 2, -Math.tan(Math.PI / 2 - settings.mainAngle) * (Math.abs(sec * radius) - widthExtent))
+  // );
   ctx.rotate(-settings.mainAngle + Math.PI / 2);
   ctx.strokeText("tan", 0, 0);
   ctx.fillText("tan", 0, 0);
@@ -343,15 +308,6 @@ function drawCircle() {
   ctx.fillText(`csc ≈ ${roundNumber(csc)}`, 0, 0);
   ctx.restore();
 
-  // ctx.save();
-  // ctx.scale(1, -1);
-  // const tanLblY = Math.max(Math.min((-cosAbs * radius * tan) / 2, heightExtent - 60), -heightExtent + 60);
-  // ctx.translate((radius + 12) * cosAbs, tanLblY);
-  // ctx.rotate((cosAbs * Math.PI) / 2);
-  // ctx.strokeText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
-  // ctx.fillText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
-  // ctx.restore();
-
   ctx.save();
   ctx.scale(1, -1);
   const tanLblY = Math.min(Math.max((radius * -tan) / 2, -heightExtent + 60), heightExtent - 60);
@@ -360,13 +316,6 @@ function drawCircle() {
   ctx.strokeText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
   ctx.fillText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
   ctx.restore();
-
-  // ctx.save();
-  // ctx.scale(1, -1);
-  // const cotLblX = Math.max(Math.min((cosAbs * Math.abs(radius * cot)) / 2, widthExtent - 60), -widthExtent + 60);
-  // ctx.strokeText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
-  // ctx.fillText(`cot ≈ ${roundNumber(cot)}`, cotLblX, (radius + 12) * -sinAbs);
-  // ctx.restore();
 
   ctx.save();
   ctx.scale(1, -1);
