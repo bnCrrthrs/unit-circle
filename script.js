@@ -10,9 +10,6 @@ ctx.scale(1, -1);
 
 const handle = document.querySelector("#handle");
 
-let mainAngle = 1;
-let mousedown = false;
-
 const lblAngleRad = document.querySelector("#lblAngleRad");
 const lblAngleDeg = document.querySelector("#lblAngleDeg");
 const lblSin = document.querySelector("#lblSin");
@@ -21,6 +18,12 @@ const lblTan = document.querySelector("#lblTan");
 const lblCsc = document.querySelector("#lblCsc");
 const lblSec = document.querySelector("#lblSec");
 const lblCot = document.querySelector("#lblCot");
+
+const settings = {
+  mainAngle: 1,
+  mouseDown: false,
+  longRound: 6,
+};
 
 function getSize() {
   canvas.width = window.innerWidth;
@@ -36,12 +39,8 @@ function getSize() {
   };
 }
 
-function positionHandle(angle = mainAngle) {
+function positionHandle(angle = settings.mainAngle) {
   const { biggest, smallest, radius } = getSize();
-  // const c = document.body.getBoundingClientRect();
-  // const h = document.body.getBoundingClientRect();
-  // const thisWidth = h.width / 2;
-  // const thisHeight = h.height / 2;
   const handleRadius = handle.getBoundingClientRect().height / 2;
 
   const cX = window.innerWidth / 2;
@@ -56,8 +55,8 @@ function positionHandle(angle = mainAngle) {
 
 function drawCircle() {
   const { biggest, smallest, widthExtent, heightExtent, radius } = getSize();
-  const sin = Math.sin(mainAngle);
-  const cos = Math.cos(mainAngle);
+  const sin = Math.sin(settings.mainAngle);
+  const cos = Math.cos(settings.mainAngle);
   const tan = sin / cos;
 
   const csc = 1 / sin;
@@ -66,24 +65,19 @@ function drawCircle() {
 
   const cosAbs = cos / Math.abs(cos);
   const sinAbs = sin / Math.abs(sin);
-  // const absTanX = Math.abs(cos) + Math.sqrt(tan ** 2 - sin ** 2);
-
-  const cscY = Math.sqrt((radius * csc) ** 2 - radius ** 2) * sinAbs;
-  const secX = Math.sqrt((radius * sec) ** 2 - radius ** 2) * cosAbs;
-
-  // const tanX = cos >= 0 ? absTanX : -absTanX;
+  const tanAbs = tan / Math.abs(tan);
 
   const angleSolidRadius = Math.min(smallest / 10, 64);
 
   // Update main Labels
-  lblAngleRad.textContent = mainAngle;
-  lblAngleDeg.textContent = (mainAngle * 180) / Math.PI;
-  lblSin.textContent = sin;
-  lblCos.textContent = cos;
-  lblTan.textContent = tan;
-  lblCsc.textContent = csc;
-  lblSec.textContent = sec;
-  lblCot.textContent = cot;
+  lblAngleRad.value = roundNumber(settings.mainAngle, settings.longRound);
+  lblAngleDeg.value = roundNumber((settings.mainAngle * 180) / Math.PI, settings.longRound);
+  lblSin.value = roundNumber(sin, settings.longRound);
+  lblCos.value = roundNumber(cos, settings.longRound);
+  lblTan.value = roundNumber(tan, settings.longRound);
+  lblCsc.textContent = roundNumber(csc, settings.longRound);
+  lblSec.textContent = roundNumber(sec, settings.longRound);
+  lblCot.textContent = roundNumber(cot, settings.longRound);
 
   // background
   ctx.fillStyle = "#E9E6E8";
@@ -114,7 +108,7 @@ function drawCircle() {
   ctx.fillStyle = "#FFB6C6";
   ctx.beginPath();
   ctx.moveTo(0, 0);
-  ctx.arc(0, 0, angleSolidRadius, 0, mainAngle);
+  ctx.arc(0, 0, angleSolidRadius, 0, settings.mainAngle);
   ctx.closePath();
   ctx.fill();
 
@@ -328,15 +322,16 @@ function drawCircle() {
   ctx.restore();
 }
 
-function roundNumber(num) {
-  const multiplied = num * 1000;
+function roundNumber(num, digits = 3) {
+  const multiplier = 10 ** digits;
+  const multiplied = num * multiplier;
   const rounded = Math.round(multiplied);
-  const divided = rounded / 1000;
+  const divided = rounded / multiplier;
   return divided;
 }
 
 function getAngleFromMouse(e) {
-  if (!mousedown) return;
+  if (!settings.mouseDown) return;
   const mouseX = e.clientX;
   const mouseY = e.clientY;
 
@@ -354,18 +349,18 @@ function getAngleFromMouse(e) {
 }
 
 function updateDetails(angle) {
-  mainAngle = angle < 0 ? angle + Math.PI * 2 : angle;
-  const sin = Math.sin(mainAngle);
-  const cos = Math.cos(mainAngle);
-  const tan = Math.sin(mainAngle);
+  settings.mainAngle = angle < 0 ? angle + Math.PI * 2 : angle;
+  const sin = Math.sin(settings.mainAngle);
+  const cos = Math.cos(settings.mainAngle);
+  const tan = Math.sin(settings.mainAngle);
   const { radius } = getSize();
-  positionHandle(mainAngle);
+  positionHandle(settings.mainAngle);
   drawCircle();
 }
 
 function updateCircle() {
   setTimeout(() => drawCircle(), 1);
-  positionHandle(mainAngle);
+  positionHandle(settings.mainAngle);
 }
 
 function keyHandle(e) {
@@ -381,15 +376,15 @@ function keyHandle(e) {
 }
 
 function incUp(shift, meta) {
-  const multiplier = shift ? 0.1 : meta ? 3 : 1;
+  const multiplier = meta ? 0.1 : shift ? 3 : 1;
   const inc = (multiplier * Math.PI) / 180;
-  updateDetails(mainAngle + inc);
+  updateDetails((settings.mainAngle + inc) % (Math.PI * 2));
 }
 
 function incDown(shift, meta) {
-  const multiplier = shift ? 0.1 : meta ? 3 : 1;
+  const multiplier = meta ? 0.1 : shift ? 3 : 1;
   const inc = (multiplier * Math.PI) / 180;
-  updateDetails(mainAngle - inc);
+  updateDetails((settings.mainAngle - inc) % (Math.PI * 2));
 }
 
 window.addEventListener("mousemove", getAngleFromMouse);
@@ -400,11 +395,76 @@ window.addEventListener("resize", updateCircle);
 document.addEventListener("keydown", keyHandle);
 
 function putMouseUp() {
-  mousedown = false;
+  settings.mouseDown = false;
 }
 
 function putMouseDown() {
-  mousedown = true;
+  settings.mouseDown = true;
+}
+
+lblAngleRad.addEventListener("change", updateFromRadians);
+lblAngleDeg.addEventListener("change", updateFromDegrees);
+lblSin.addEventListener("change", updateFromSin);
+lblCos.addEventListener("change", updateFromCos);
+lblTan.addEventListener("change", updateFromTan);
+
+function updateFromRadians(e) {
+  const value = Number(e.target.value) % (Math.PI * 2);
+  if (!isNaN(value)) {
+    updateDetails(value);
+    // e.target.blur();
+  }
+  e.target.value = settings.mainAngle;
+  e.target.blur();
+  return;
+}
+
+function updateFromDegrees(e) {
+  const value = Number(e.target.value) % 360;
+  if (!isNaN(value)) {
+    const radians = (value * Math.PI) / 180;
+    updateDetails(radians);
+  } else {
+    updateDetails(settings.mainAngle);
+  }
+  e.target.blur();
+  return;
+}
+
+function updateFromSin(e) {
+  const value = Number(e.target.value);
+  if (!isNaN(value) && -1 <= value && 1 >= value) {
+    const radians = Math.asin(value);
+    updateDetails(radians);
+  } else {
+    updateDetails(settings.mainAngle);
+  }
+  e.target.blur();
+  return;
+}
+
+function updateFromCos(e) {
+  const value = Number(e.target.value);
+  if (!isNaN(value) && -1 <= value && 1 >= value) {
+    const radians = Math.acos(value);
+    updateDetails(radians);
+  } else {
+    updateDetails(settings.mainAngle);
+  }
+  e.target.blur();
+  return;
+}
+
+function updateFromTan(e) {
+  const value = Number(e.target.value);
+  if (!isNaN(value)) {
+    const radians = Math.atan(value);
+    updateDetails(radians);
+  } else {
+    updateDetails(settings.mainAngle);
+  }
+  e.target.blur();
+  return;
 }
 
 positionHandle();

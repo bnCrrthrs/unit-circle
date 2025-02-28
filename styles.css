@@ -17,12 +17,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-/* 
-#container {
-  width: min(90vw, 90vh);
-  height: min(90vw, 90vh);
-  background-color: blue;
-} */
 
 #canvas {
   display: block;
@@ -52,21 +46,20 @@ body {
   cursor: pointer;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #220919;
+  width: 2rem;
+  height: 2rem;
+  border: 0.2rem solid #220919;
   background-color: #22feb0;
-  border-radius: 10px;
+  border-radius: 1rem;
 }
 
 #results {
   position: absolute;
   display: grid;
-  grid-template-columns: 12rem 22rem;
+  grid-template-columns: 12rem 12rem;
   top: 0;
   left: 0;
   min-width: max-content;
-  /* width: 35rem; */
   margin: 1.2rem;
   padding: 1.2rem;
   background-color: #f8fffd;
@@ -83,4 +76,11 @@ body {
   font-family: monospace;
   font-size: 1.6rem;
   padding: 0.4rem;
+}
+
+.lblInput {
+  display: block;
+  border: none;
+  padding: 0.4rem;
+  margin: 0;
 }
