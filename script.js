@@ -18,11 +18,13 @@ const lblTan = document.querySelector("#lblTan");
 const lblCsc = document.querySelector("#lblCsc");
 const lblSec = document.querySelector("#lblSec");
 const lblCot = document.querySelector("#lblCot");
+const inputAnno = document.querySelector("#inputAnnotation");
 
 const settings = {
   mainAngle: 1,
   mouseDown: false,
   longRound: 6,
+  annotationsOn: true,
 };
 
 function getSize() {
@@ -112,15 +114,6 @@ function drawCircle() {
   ctx.closePath();
   ctx.fill();
 
-  // axes
-  ctx.beginPath();
-  ctx.moveTo(-widthExtent, 0);
-  ctx.lineTo(widthExtent, 0);
-  ctx.moveTo(0, -heightExtent);
-  ctx.lineTo(0, heightExtent);
-  ctx.closePath();
-  ctx.stroke();
-
   // angle line to tan
   // ctx.strokeStyle = "#D3CED1";
   // ctx.beginPath();
@@ -145,6 +138,22 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
+  // alt sec
+  ctx.strokeStyle = "#BFA7D8";
+  ctx.beginPath();
+  ctx.moveTo(0, -sinAbs);
+  ctx.lineTo(radius * cosAbs, radius * tan * cosAbs - sinAbs);
+  ctx.closePath();
+  ctx.stroke();
+
+  // alt csc
+  ctx.strokeStyle = "#D3B4B4";
+  ctx.beginPath();
+  ctx.moveTo(-cosAbs, 0);
+  ctx.lineTo(Math.abs(cot) * radius * cosAbs - cosAbs, radius * sinAbs);
+  ctx.closePath();
+  ctx.stroke();
+
   // main angle line
   ctx.strokeStyle = "#220919";
   ctx.beginPath();
@@ -153,14 +162,14 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // // sec and csc
-
-  // ctx.strokeStyle = "#EEA243";
-  // ctx.beginPath();
-  // ctx.moveTo(radius * cos, radius * sin + 1);
-  // ctx.lineTo(radius * cosAbs, cscY + 1);
-  // ctx.closePath();
-  // ctx.stroke();
+  // axes
+  ctx.beginPath();
+  ctx.moveTo(-widthExtent, 0);
+  ctx.lineTo(widthExtent, 0);
+  ctx.moveTo(0, -heightExtent);
+  ctx.lineTo(0, heightExtent);
+  ctx.closePath();
+  ctx.stroke();
 
   // ctx.strokeStyle = "#5E239D";
   // ctx.beginPath();
@@ -249,7 +258,52 @@ function drawCircle() {
   ctx.closePath();
   ctx.stroke();
 
-  // update text labels
+  ////// Annotations
+
+  if (!settings.annotationsOn) return;
+
+  // update mini annotations
+  ctx.fillStyle = "#220919";
+  ctx.strokeStyle = "#E9E6E8";
+  ctx.lineWidth = 2;
+  ctx.font = "1.2rem serif";
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+
+  ctx.save();
+  ctx.scale(1, -1);
+  ctx.translate((radius * (sec + cos)) / 2, -(radius * sin) / 2);
+  ctx.rotate(-settings.mainAngle + Math.PI / 2);
+  ctx.strokeText("tan", 0, 0);
+  ctx.fillText("tan", 0, 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.scale(1, -1);
+  ctx.translate((radius * cos) / 2, -(radius * (sin + csc)) / 2);
+  ctx.rotate(-settings.mainAngle + Math.PI / 2);
+  ctx.strokeText("cot", 0, 0);
+  ctx.fillText("cot", 0, 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.scale(1, -1);
+  // ctx.translate((cosAbs * radius) / 2 - 5, -(tan * tanAbs * sinAbs * radius) / 2);
+  ctx.translate(cosAbs * (radius - 5), -(tan * tanAbs * sinAbs * (radius - 10)));
+  ctx.rotate(-settings.mainAngle);
+  ctx.strokeText("sec", 0, 0);
+  ctx.fillText("sec", 0, 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.scale(1, -1);
+  ctx.translate(cot * tanAbs * cosAbs * (radius - 10), -sinAbs * (radius - 5));
+  ctx.rotate(-settings.mainAngle);
+  ctx.strokeText("csc", 0, 0);
+  ctx.fillText("csc", 0, 0);
+  ctx.restore();
+
+  // update larger annotations
   ctx.fillStyle = "#220919";
   ctx.strokeStyle = "#E9E6E8";
   ctx.lineWidth = 4;
@@ -364,13 +418,16 @@ function updateCircle() {
 }
 
 function keyHandle(e) {
-  const { shiftKey, metaKey, key } = e;
+  const { shiftKey, metaKey, key, target } = e;
   switch (key) {
     case "ArrowDown":
       incDown(shiftKey, metaKey);
       break;
     case "ArrowUp":
       incUp(shiftKey, metaKey);
+      break;
+    case "Escape":
+      target.blur();
       break;
   }
 }
@@ -408,11 +465,15 @@ lblSin.addEventListener("change", updateFromSin);
 lblCos.addEventListener("change", updateFromCos);
 lblTan.addEventListener("change", updateFromTan);
 
+inputAnno.addEventListener("change", () => {
+  settings.annotationsOn = inputAnno.checked;
+  drawCircle();
+});
+
 function updateFromRadians(e) {
   const value = Number(e.target.value) % (Math.PI * 2);
   if (!isNaN(value)) {
     updateDetails(value);
-    // e.target.blur();
   }
   e.target.value = settings.mainAngle;
   e.target.blur();
