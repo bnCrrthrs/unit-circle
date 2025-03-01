@@ -1,481 +1,151 @@
 "use strict";
+// svg.innerHTML = `<circle cx="1.25" cy="1.25" r="1" style="fill: #22feb0; stroke: #220919; stroke-width: ${strokeWidth}" />`;
 
-const container = document.querySelector("#container");
-const canvas = document.querySelector("#canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-ctx.translate(canvas.width / 2, canvas.height / 2);
-ctx.scale(1, -1);
-
+const svg = document.querySelector("#svg-circle");
 const handle = document.querySelector("#handle");
 
-const lblAngleRad = document.querySelector("#lblAngleRad");
-const lblAngleDeg = document.querySelector("#lblAngleDeg");
-const lblSin = document.querySelector("#lblSin");
-const lblCos = document.querySelector("#lblCos");
-const lblTan = document.querySelector("#lblTan");
-const lblCsc = document.querySelector("#lblCsc");
-const lblSec = document.querySelector("#lblSec");
-const lblCot = document.querySelector("#lblCot");
-const inputAnno = document.querySelector("#inputAnnotation");
-
-const settings = {
-  mainAngle: 1,
-  mouseDown: false,
-  longRound: 6,
-  annotationsOn: true,
+const c = {
+  white: "#91848C",
+  grey: "#64535E",
+  main: "#22feb0",
+  red: "#FF4870",
+  orange: "#EEA243",
+  yellow: "#FDE74C",
+  green: "#76B041",
+  blue: "#02A9EA",
+  purple: "#5E239D",
+  pink: "#FF66B3",
 };
 
-function getSize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.scale(1, -1);
-  return {
-    biggest: Math.max(canvas.width, canvas.height),
-    smallest: Math.min(canvas.width, canvas.height),
-    widthExtent: canvas.width / 2,
-    heightExtent: canvas.height / 2,
-    radius: Math.min(canvas.width, canvas.height) / 4,
-  };
+const settings = {};
+setSettings();
+function setSettings() {
+  settings.sq = Math.min(window.innerHeight, window.innerWidth);
+  settings.r = svg.getBoundingClientRect().width / 4;
+  settings.strokeWidth = 2 / settings.r;
+  settings.max = Math.max(window.innerHeight, window.innerWidth) / settings.r;
+  settings.mouseDown = false;
 }
 
-function positionHandle(angle = settings.mainAngle) {
-  const { biggest, smallest, radius } = getSize();
-  const handleRadius = handle.getBoundingClientRect().height / 2;
-
-  const cX = window.innerWidth / 2;
-  const cY = window.innerHeight / 2;
-
-  const x = radius * Math.cos(angle);
-  const y = -radius * Math.sin(angle);
-
-  handle.style.left = x + cX - handleRadius + "px";
-  handle.style.top = y + cY - handleRadius + "px";
+function line(coords, colour = c.main, width = 1) {
+  if (coords.includes(NaN) || coords.includes(Infinity) || coords.includes(-Infinity)) return;
+  const [x1, y1, x2, y2] = coords;
+  // const [x1, y1, x2, y2] = coords.map((n) => {
+  //   if (isNaN(n)) return 0;
+  //   if (n === Infinity) return 1000000000;
+  //   if (n === -Infinity) return -1000000000;
+  //   return n;
+  // });
+  svg.insertAdjacentHTML(
+    "afterbegin",
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="fill: none; stroke: ${colour}; stroke-width: ${
+      settings.strokeWidth * width
+    }; stroke-linecap: round" />`
+  );
 }
 
-function drawCircle() {
-  const { biggest, smallest, widthExtent, heightExtent, radius } = getSize();
-  const sin = Math.sin(settings.mainAngle);
-  const cos = Math.cos(settings.mainAngle);
-  const tan = sin / cos;
-
-  const csc = 1 / sin;
+function drawCircle(angle = Math.PI / 3) {
+  angle += Math.PI * 2;
+  angle %= Math.PI * 2;
+  const sin = Math.sin(angle);
+  const cos = Math.cos(angle);
+  const tan = Math.tan(angle);
   const sec = 1 / cos;
+  const csc = 1 / sin;
   const cot = 1 / tan;
 
-  const cosAbs = cos / Math.abs(cos);
   const sinAbs = sin / Math.abs(sin);
-  const tanAbs = tan / Math.abs(tan);
+  const cosAbs = cos / Math.abs(cos);
 
-  const angleSolidRadius = Math.min(smallest / 10, 64);
+  //circle
+  svg.innerHTML = `<circle cx="0" cy="0" r="1" style="fill: none; stroke: #ffffff; stroke-width: ${settings.strokeWidth / 2}" />`;
 
-  // Update main Labels
-  lblAngleRad.value = roundNumber(settings.mainAngle, settings.longRound);
-  lblAngleDeg.value = roundNumber((settings.mainAngle * 180) / Math.PI, settings.longRound);
-  lblSin.value = roundNumber(sin, settings.longRound);
-  lblCos.value = roundNumber(cos, settings.longRound);
-  lblTan.value = roundNumber(tan, settings.longRound);
-  lblCsc.textContent = roundNumber(csc, settings.longRound);
-  lblSec.textContent = roundNumber(sec, settings.longRound);
-  lblCot.textContent = roundNumber(cot, settings.longRound);
+  line([cos, 0, cos, sin], c.main, 0.5); //sin
+  line([0, sin, cos, sin], c.red, 0.5); //cos
+  line([0, csc, cos, sin], c.orange, 0.5); //cot
+  line([sec, 0, cos, sin], c.yellow, 0.5); //tan
+  line([0, 0, sec, 0], c.pink, 0.5); //sec
+  line([0, 0, 0, csc], c.blue, 0.5); //csc
 
-  // background
-  ctx.fillStyle = "#E9E6E8";
-  ctx.fillRect(-widthExtent, -heightExtent, canvas.width, canvas.height);
+  line([0, sinAbs * settings.strokeWidth, cosAbs * 1, cosAbs * tan + sinAbs * settings.strokeWidth], c.pink, 0.5); // outer sec
+  line([0, 0, sinAbs * cot, sinAbs * 1], c.blue, 0.5); //outer csc
+  line([cosAbs, 0, cosAbs, cosAbs * tan + sinAbs * settings.strokeWidth], c.yellow, 0.5); // outer tan
+  line([0, sinAbs, cot * sinAbs, sinAbs], c.orange, 0.5); // outer cot
 
-  // border
-  ctx.strokeStyle = "#D3CED1";
-  ctx.beginPath();
-  ctx.moveTo(-widthExtent, -radius);
-  ctx.lineTo(widthExtent, -radius);
-  ctx.moveTo(-widthExtent, radius);
-  ctx.lineTo(widthExtent, radius);
-  ctx.moveTo(-radius, -heightExtent);
-  ctx.lineTo(-radius, heightExtent);
-  ctx.moveTo(radius, -heightExtent);
-  ctx.lineTo(radius, heightExtent);
-  ctx.closePath();
-  ctx.stroke();
+  //axes
+  line([-settings.max, 0, settings.max, 0], c.grey, 0.25);
+  line([0, -settings.max, 0, settings.max], c.grey, 0.25);
+  line([-settings.max, 1, settings.max, 1], c.grey, 0.25);
+  line([-settings.max, -1, settings.max, -1], c.grey, 0.25);
+  line([-1, -settings.max, -1, settings.max], c.grey, 0.25);
+  line([1, -settings.max, 1, settings.max], c.grey, 0.25);
 
-  // circle
-  ctx.strokeStyle = "#000000";
-  ctx.beginPath();
-  ctx.arc(0, 0, radius, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.stroke();
+  // annotations
+  svg.insertAdjacentHTML(
+    "beforeend",
+    // `<path id="cos" d="M0 0 L1 0" /><text text-anchor="middle" style="font-size: 0.05; fill: white"><textPath href="#cos">Cosine</textPath></text>`
+    `  <text text-anchor="middle" x="0.5" y="0" style="font-size: 0.075; fill: white; transform: scale(1,-1);">Cosine</text>
+`
+  );
 
-  // angle solid
-  ctx.fillStyle = "#FFB6C6";
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.arc(0, 0, angleSolidRadius, 0, settings.mainAngle);
-  ctx.closePath();
-  ctx.fill();
+  //angle solid
+  //M0 0 L0.2 0 A0 0 0 1 1 ${cos * 0.2} ${sin * 0.2} C"
+  svg.insertAdjacentHTML(
+    "afterbegin",
+    `<path d="M0.15 0 A0.15 0.15 0 ${angle > Math.PI ? 1 : 0} 1 ${cos * 0.15} ${sin * 0.15}" style="fill: none; stroke: ${
+      c.purple
+    }; stroke-width: ${settings.strokeWidth}" />`
+  );
 
-  // angle to tan
-  ctx.strokeStyle = "#D3CED1";
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(radius, radius * tan);
-  ctx.closePath();
-  ctx.stroke();
-
-  //angle to cot
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(radius * cot, radius);
-  ctx.closePath();
-  ctx.stroke();
-
-  // alt sec
-  ctx.strokeStyle = "#BFA7D8";
-  ctx.beginPath();
-  ctx.moveTo(0, -sinAbs);
-  ctx.lineTo(radius * cosAbs, radius * tan * cosAbs - sinAbs);
-  ctx.closePath();
-  ctx.stroke();
-
-  // alt csc
-  ctx.strokeStyle = "#D3B4B4";
-  ctx.beginPath();
-  ctx.moveTo(-cosAbs, 0);
-  ctx.lineTo(Math.abs(cot) * radius * cosAbs - cosAbs, radius * sinAbs);
-  ctx.closePath();
-  ctx.stroke();
-
-  // main angle line
-  ctx.strokeStyle = "#220919";
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(radius * cos, radius * sin);
-  ctx.closePath();
-  ctx.stroke();
-
-  // axes
-  ctx.beginPath();
-  ctx.moveTo(-widthExtent, 0);
-  ctx.lineTo(widthExtent, 0);
-  ctx.moveTo(0, -heightExtent);
-  ctx.lineTo(0, heightExtent);
-  ctx.closePath();
-  ctx.stroke();
-
-  // sec
-  ctx.strokeStyle = "#5E239D";
-  ctx.beginPath();
-  ctx.moveTo(0, -5);
-  ctx.lineTo(radius * sec, -5);
-  ctx.closePath();
-  ctx.stroke();
-
-  // csc
-  ctx.strokeStyle = "#5E239D";
-  ctx.beginPath();
-  ctx.moveTo(-5, 0);
-  ctx.lineTo(-5, radius * csc);
-  ctx.closePath();
-  ctx.stroke();
-
-  // cosine
-  ctx.strokeStyle = "#FF4870";
-  ctx.beginPath();
-  ctx.moveTo(0, radius * sin);
-  ctx.lineTo(radius * cos, radius * sin);
-  ctx.closePath();
-  ctx.stroke();
-
-  // sine
-  ctx.strokeStyle = "#76B041";
-  ctx.beginPath();
-  ctx.moveTo(radius * cos, 0);
-  ctx.lineTo(radius * cos, radius * sin);
-  ctx.closePath();
-  ctx.stroke();
-
-  // tangent line
-  ctx.strokeStyle = "#02A9EA";
-  ctx.beginPath();
-  ctx.moveTo(0, csc * radius);
-  ctx.lineTo(sec * radius, 0);
-  ctx.closePath();
-  ctx.stroke();
-
-  // tangent length
-  ctx.strokeStyle = "#EEA243";
-  ctx.beginPath();
-  ctx.moveTo(radius, 0);
-  ctx.lineTo(radius, radius * tan);
-  ctx.closePath();
-  ctx.stroke();
-
-  // cotan length
-  ctx.strokeStyle = "#EEA243";
-  ctx.beginPath();
-  ctx.moveTo(0, radius);
-  ctx.lineTo(radius * cot, radius);
-  ctx.closePath();
-  ctx.stroke();
-
-  ////// Annotations
-
-  if (!settings.annotationsOn) return;
-
-  // update mini annotations
-  ctx.fillStyle = "#220919";
-  ctx.strokeStyle = "#E9E6E8";
-  ctx.lineWidth = 2;
-  ctx.font = "1.2rem serif";
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "center";
-
-  // mini tan annotation
-  ctx.save();
-  ctx.scale(1, -1);
-  ctx.translate((radius * (sec + cos)) / 2, -(radius * sin) / 2);
-  // ctx.translate(
-  //   Math.min((radius * (sec + cos)) / 2, widthExtent - 10),
-  //   Math.min(-(radius * sin) / 2, -Math.tan(Math.PI / 2 - settings.mainAngle) * (Math.abs(sec * radius) - widthExtent))
-  // );
-  ctx.rotate(-settings.mainAngle + Math.PI / 2);
-  ctx.strokeText("tan", 0, 0);
-  ctx.fillText("tan", 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  ctx.translate((radius * cos) / 2, -(radius * (sin + csc)) / 2);
-  ctx.rotate(-settings.mainAngle + Math.PI / 2);
-  ctx.strokeText("cot", 0, 0);
-  ctx.fillText("cot", 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  // ctx.translate((cosAbs * radius) / 2 - 5, -(tan * tanAbs * sinAbs * radius) / 2);
-  ctx.translate(cosAbs * (radius - 5), -(tan * tanAbs * sinAbs * (radius - 10)));
-  ctx.rotate(-settings.mainAngle);
-  ctx.strokeText("sec", 0, 0);
-  ctx.fillText("sec", 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  ctx.translate(cot * tanAbs * cosAbs * (radius - 10), -sinAbs * (radius - 5));
-  ctx.rotate(-settings.mainAngle);
-  ctx.strokeText("csc", 0, 0);
-  ctx.fillText("csc", 0, 0);
-  ctx.restore();
-
-  // update larger annotations
-  ctx.fillStyle = "#220919";
-  ctx.strokeStyle = "#E9E6E8";
-  ctx.lineWidth = 4;
-  ctx.font = "1.8rem serif";
-  ctx.textBaseline = "middle";
-  ctx.textAlign = "center";
-
-  ctx.save();
-  ctx.scale(1, -1);
-  ctx.translate((radius * cos) / 2, -radius * sin);
-  ctx.strokeText(`cos ≈ ${roundNumber(cos)}`, 0, 0);
-  ctx.fillText(`cos ≈ ${roundNumber(cos)}`, 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  ctx.translate(radius * cos, (-radius * sin) / 2);
-  ctx.rotate(Math.PI / 2);
-  ctx.strokeText(`sin ≈ ${roundNumber(sin)}`, 0, 0);
-  ctx.fillText(`sin ≈ ${roundNumber(sin)}`, 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  const secLblX = Math.max(Math.min((sec * radius) / 2, widthExtent - 60), -widthExtent + 60);
-  ctx.translate(secLblX, 12);
-  ctx.strokeText(`sec  ≈ ${roundNumber(sec)}`, 0, 0);
-  ctx.fillText(`sec  ≈ ${roundNumber(sec)}`, 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  const cscLblY = Math.max(Math.min((csc * radius) / 2, heightExtent - 60), -heightExtent + 60);
-  ctx.translate(-12, -cscLblY);
-  ctx.rotate((-cosAbs * Math.PI) / 2);
-  ctx.strokeText(`csc ≈ ${roundNumber(csc)}`, 0, 0);
-  ctx.fillText(`csc ≈ ${roundNumber(csc)}`, 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  const tanLblY = Math.min(Math.max((radius * -tan) / 2, -heightExtent + 60), heightExtent - 60);
-  ctx.translate(radius + 12, tanLblY);
-  ctx.rotate(Math.PI / 2);
-  ctx.strokeText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
-  ctx.fillText(`tan ≈ ${roundNumber(tan)}`, 0, 0);
-  ctx.restore();
-
-  ctx.save();
-  ctx.scale(1, -1);
-  const cotLblX = Math.max(Math.min((radius * cot) / 2, widthExtent - 60), -widthExtent + 60);
-  ctx.strokeText(`cot ≈ ${roundNumber(cot)}`, cotLblX, -radius - 10);
-  ctx.fillText(`cot ≈ ${roundNumber(cot)}`, cotLblX, -radius - 10);
-  ctx.restore();
+  // drawHandle
+  svg.insertAdjacentHTML(
+    "beforeend",
+    `<circle cx="${cos}" cy="${sin}" r="${0.05}" style="fill: #220919; stroke: #ffffff; stroke-width: ${settings.strokeWidth / 2}" />`
+  );
+  positionHandle(angle);
 }
 
-function roundNumber(num, digits = 3) {
-  const multiplier = 10 ** digits;
-  const multiplied = num * multiplier;
-  const rounded = Math.round(multiplied);
-  const divided = rounded / multiplier;
-  return divided;
-}
-
-function getAngleFromMouse(e) {
-  if (!settings.mouseDown) return;
-  const mouseX = e.clientX;
-  const mouseY = e.clientY;
-
+function positionHandle(angle) {
   const cX = window.innerWidth / 2;
   const cY = window.innerHeight / 2;
 
-  const x = mouseX - cX;
-  const y = mouseY - cY;
+  const x = settings.r * Math.cos(angle);
+  const y = settings.r * Math.sin(angle);
 
-  const boundedAngle = -Math.atan(y / x);
-  const angle = x >= 0 ? boundedAngle : boundedAngle + Math.PI;
-
-  positionHandle(angle);
-  updateDetails(angle);
+  handle.style.left = x + cX + "px";
+  handle.style.top = y + cY + "px";
 }
 
-function updateDetails(angle) {
-  settings.mainAngle = angle < 0 ? angle + Math.PI * 2 : angle;
-  const sin = Math.sin(settings.mainAngle);
-  const cos = Math.cos(settings.mainAngle);
-  const tan = Math.sin(settings.mainAngle);
-  const { radius } = getSize();
-  positionHandle(settings.mainAngle);
-  drawCircle();
-}
-
-function updateCircle() {
-  setTimeout(() => drawCircle(), 1);
-  positionHandle(settings.mainAngle);
-}
-
-function keyHandle(e) {
-  const { shiftKey, metaKey, key, target } = e;
-  switch (key) {
-    case "ArrowDown":
-      incDown(shiftKey, metaKey);
-      break;
-    case "ArrowUp":
-      incUp(shiftKey, metaKey);
-      break;
-    case "Escape":
-      target.blur();
-      break;
-  }
-}
-
-function incUp(shift, meta) {
-  const multiplier = meta ? 0.1 : shift ? 3 : 1;
-  const inc = (multiplier * Math.PI) / 180;
-  updateDetails((settings.mainAngle + inc) % (Math.PI * 2));
-}
-
-function incDown(shift, meta) {
-  const multiplier = meta ? 0.1 : shift ? 3 : 1;
-  const inc = (multiplier * Math.PI) / 180;
-  updateDetails((settings.mainAngle - inc) % (Math.PI * 2));
-}
-
-window.addEventListener("mousemove", getAngleFromMouse);
-window.addEventListener("mouseup", putMouseUp);
 handle.addEventListener("mousedown", putMouseDown);
-window.addEventListener("resize", updateCircle);
+document.addEventListener("mouseup", putMouseUp);
+document.addEventListener("mousemove", moveMouse);
+window.addEventListener("resize", resize);
 
-document.addEventListener("keydown", keyHandle);
-
-function putMouseUp() {
-  settings.mouseDown = false;
+function resize() {
+  setSettings();
+  drawCircle();
 }
 
 function putMouseDown() {
   settings.mouseDown = true;
 }
 
-lblAngleRad.addEventListener("change", updateFromRadians);
-lblAngleDeg.addEventListener("change", updateFromDegrees);
-lblSin.addEventListener("change", updateFromSin);
-lblCos.addEventListener("change", updateFromCos);
-lblTan.addEventListener("change", updateFromTan);
-
-inputAnno.addEventListener("change", () => {
-  settings.annotationsOn = inputAnno.checked;
-  drawCircle();
-});
-
-function updateFromRadians(e) {
-  const value = Number(e.target.value) % (Math.PI * 2);
-  if (!isNaN(value)) {
-    updateDetails(value);
-  }
-  e.target.value = settings.mainAngle;
-  e.target.blur();
-  return;
+function putMouseUp() {
+  settings.mouseDown = false;
 }
 
-function updateFromDegrees(e) {
-  const value = Number(e.target.value) % 360;
-  if (!isNaN(value)) {
-    const radians = (value * Math.PI) / 180;
-    updateDetails(radians);
-  } else {
-    updateDetails(settings.mainAngle);
-  }
-  e.target.blur();
-  return;
+function moveMouse(e) {
+  if (!settings.mouseDown) return;
+  const cX = window.innerWidth / 2;
+  const cY = window.innerHeight / 2;
+
+  const x = e.clientX - cX;
+  const y = -(e.clientY - cY);
+
+  const angleOffset = x < 0 ? Math.PI : 0;
+  const angle = Math.atan(y / x) + angleOffset;
+
+  drawCircle(angle);
 }
 
-function updateFromSin(e) {
-  const value = Number(e.target.value);
-  if (!isNaN(value) && -1 <= value && 1 >= value) {
-    const radians = Math.asin(value);
-    updateDetails(radians);
-  } else {
-    updateDetails(settings.mainAngle);
-  }
-  e.target.blur();
-  return;
-}
-
-function updateFromCos(e) {
-  const value = Number(e.target.value);
-  if (!isNaN(value) && -1 <= value && 1 >= value) {
-    const radians = Math.acos(value);
-    updateDetails(radians);
-  } else {
-    updateDetails(settings.mainAngle);
-  }
-  e.target.blur();
-  return;
-}
-
-function updateFromTan(e) {
-  const value = Number(e.target.value);
-  if (!isNaN(value)) {
-    const radians = Math.atan(value);
-    updateDetails(radians);
-  } else {
-    updateDetails(settings.mainAngle);
-  }
-  e.target.blur();
-  return;
-}
-
-positionHandle();
 drawCircle();

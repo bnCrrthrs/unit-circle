@@ -46,13 +46,11 @@ body {
   cursor: pointer;
   top: 0;
   left: 0;
-  transform: translate(-50%, -50%);
   width: 2rem;
   height: 2rem;
-  border: 0.2rem solid #22feb0;
-  background-color: #220919;
+  border: 0.2rem solid #220919;
+  background-color: #22feb0;
   border-radius: 1rem;
-  z-index: 1;
 }
 
 #results {
@@ -66,7 +64,6 @@ body {
   padding: 1.2rem;
   background-color: #f8fffd;
   border-radius: 0.8rem;
-  display: none;
 }
 
 .lblName {
@@ -93,23 +90,4 @@ body {
   margin-left: 0.4rem;
   width: 1.6rem;
   cursor: pointer;
-}
-
-/**********/
-
-#svg-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100vh;
-  background-color: #220919;
-  transform: scale(1, -1);
-}
-
-#svg-circle {
-  /* transform: scale(1, -1); */
-  width: min(100vw, 100vh);
-  aspect-ratio: 1;
 }

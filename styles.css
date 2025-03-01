@@ -18,39 +18,18 @@ body {
   justify-content: center;
 }
 
-#canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* #circle {
-  width: min(90vw, 90vh);
-}
-
-#circle-svg {
-  fill: none;
-  stroke: #220919;
-}
-
-.stroke-half {
-  stroke-width: 0.5;
-}
-
-.stroke-quarter {
-  stroke-width: 0.25;
-} */
-
 #handle {
   position: absolute;
   cursor: pointer;
   top: 0;
   left: 0;
+  transform: translate(-50%, -50%);
   width: 2rem;
   height: 2rem;
-  border: 0.2rem solid #220919;
-  background-color: #22feb0;
+  border: none;
+  background-color: none;
   border-radius: 1rem;
+  z-index: 1;
 }
 
 #results {
@@ -64,6 +43,7 @@ body {
   padding: 1.2rem;
   background-color: #f8fffd;
   border-radius: 0.8rem;
+  display: none;
 }
 
 .lblName {
@@ -90,4 +70,24 @@ body {
   margin-left: 0.4rem;
   width: 1.6rem;
   cursor: pointer;
+}
+
+/**********/
+
+#svg-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #220919;
+  transform: scale(1, -1);
+}
+
+#svg-circle {
+  /* transform: scale(1, -1); */
+  width: min(100vw, 100vh);
+  aspect-ratio: 1;
+  overflow: visible;
 }
