@@ -81,12 +81,7 @@ function drawCircle(angle = Math.PI / 3) {
   line([1, -settings.max, 1, settings.max], c.grey, 0.25);
 
   // annotations
-  svg.insertAdjacentHTML(
-    "beforeend",
-    // `<path id="cos" d="M0 0 L1 0" /><text text-anchor="middle" style="font-size: 0.05; fill: white"><textPath href="#cos">Cosine</textPath></text>`
-    `  <text text-anchor="middle" x="0.5" y="0" style="font-size: 0.075; fill: white; transform: scale(1,-1);">Cosine</text>
-`
-  );
+  svg.insertAdjacentHTML("beforeend", `<text class="annotation-sm" x="${cos / 2}" y="${-sin}">cos</text>`);
 
   //angle solid
   //M0 0 L0.2 0 A0 0 0 1 1 ${cos * 0.2} ${sin * 0.2} C"

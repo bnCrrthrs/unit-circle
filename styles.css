@@ -91,3 +91,18 @@ body {
   aspect-ratio: 1;
   overflow: visible;
 }
+
+.annotation-sm {
+  font-family: serif;
+  /* line-weight: 0.01; */
+  stroke: #220919;
+  stroke-width: 0.005rem;
+
+  fill: white;
+  font-size: 0.01rem;
+  transform: scale(1, -1);
+  text-anchor: middle;
+  alignment-baseline: middle;
+  paint-order: stroke;
+  user-select: none;
+}
