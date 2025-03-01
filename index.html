@@ -10,13 +10,37 @@
     <script defer src="script.js"></script>
   </head>
   <body>
-    <div id="svg-container"><?xml version="1.0" encoding="UTF-8"?>
-      <svg id="svg-circle" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 4 4">
-        
-      </svg>
+    <div id="svg-container">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <svg id="svg-circle" xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 4 4"></svg>
       <div id="handle"></div>
-      </div>
-    <div id="results">
+    </div>
+    <div class="figures" id="figures-angles">
+      <p class="lblName">Radians:</p>
+      <input class="lblValue lblInput" id="lblAngleRad" autocomplete="off" />
+      <p class="lblName">Degrees:</p>
+      <input class="lblValue lblInput" id="lblAngleDeg" autocomplete="off" />
+    </div>
+    <div class="figures" id="figures-main">
+      <p class="lblName sin-col">Sine:</p>
+      <p class="lblValue" id="lblSin"></p>
+      <p class="lblName csc-col">Cosecant:</p>
+      <p class="lblValue" id="lblCsc"></p>
+      <p class="lblName cos-col">Cosine:</p>
+      <p class="lblValue" id="lblCos"></p>
+      <p class="lblName sec-col">Secant:</p>
+      <p class="lblValue" id="lblSec"></p>
+      <p class="lblName tan-col">Tangent:</p>
+      <p class="lblValue" id="lblTan"></p>
+      <p class="lblName cot-col">Cotangent:</p>
+      <p class="lblValue" id="lblCot"></p>
+      <!-- <div class="annotations">
+        <p class="lblName">Annotations:</p>
+        <input id="inputAnnotation" class="boxInput" type="checkbox" checked="true" />
+      </div> -->
+    </div>
+
+    <!-- <div id="results">
       <p class="lblName">Radians:</p>
       <input class="lblValue lblInput" id="lblAngleRad" autocomplete="off"></input>
       <p class="lblName">Degrees:</p>
@@ -34,7 +58,7 @@
       <p class="lblName">Cotangent:</p>
       <p class="lblValue" id="lblCot"></p>
       <p class="lblName">Annotations:</p> <input id="inputAnnotation" class="boxInput" type="checkbox" checked="true" />
-    </div>
+    </div> -->
     <!-- <div id="circle">
       <svg id="circle-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <line class="stroke-quarter" x1="0" y1="50" x2="100" y2="50" stroke="#A79DA3" />

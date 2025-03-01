@@ -32,37 +32,95 @@ body {
   z-index: 1;
 }
 
-#results {
+.figures {
+  position: absolute;
+  display: grid;
+  min-width: max-content;
+  margin: 1.2rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #382230;
+  border-radius: 0.8rem;
+}
+
+#figures-angles {
+  grid-template-columns: 6rem 8rem;
+  top: 0;
+  left: 0;
+}
+
+#figures-main {
+  grid-template-columns: 6rem 8rem 6rem 8rem;
+  bottom: 0;
+  left: 0;
+}
+
+/* #results {
   position: absolute;
   display: grid;
   grid-template-columns: 12rem 12rem;
-  top: 0;
+  bottom: 0;
   left: 0;
   min-width: max-content;
   margin: 1.2rem;
-  padding: 1.2rem;
+  padding: 0.6rem 1.2rem;
   background-color: #f8fffd;
   border-radius: 0.8rem;
-  display: none;
-}
+} */
 
 .lblName {
   text-align: right;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   padding: 0.4rem;
+  color: #d3ced1;
 }
 
 .lblValue {
   font-family: monospace;
-  font-size: 1.6rem;
-  padding: 0.4rem;
+  font-size: 1.2rem;
+  padding: 0.2rem 0.4rem;
+  margin: 0.1rem;
+  color: #d3ced1;
+}
+
+/* .annotations {
+  position: absolute;
+  left: 0;
+} */
+
+.sin-col {
+  color: #22feb0;
+}
+.cos-col {
+  color: #ff4870;
+}
+.tan-col {
+  color: #fde74c;
+}
+.csc-col {
+  color: #02a9ea;
+}
+.sec-col {
+  color: #ff66b3;
+}
+.cot-col {
+  color: #eea243;
 }
 
 .lblInput {
   display: block;
   border: none;
+  background-color: inherit;
   padding: 0.4rem;
   margin: 0;
+  border-radius: 0.2rem;
+  color: #d3ced1;
+}
+
+.lblInput:focus {
+  border: none;
+  outline: none;
+  background-color: #22feb0;
+  color: #220919;
 }
 
 .boxInput {
@@ -97,10 +155,8 @@ body {
   /* line-weight: 0.01; */
   stroke: #220919;
   stroke-width: 0.005rem;
-
   fill: white;
   font-size: 0.01rem;
-  transform: scale(1, -1);
   text-anchor: middle;
   alignment-baseline: middle;
   paint-order: stroke;

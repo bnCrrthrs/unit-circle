@@ -24,18 +24,23 @@ function setSettings() {
   settings.r = svg.getBoundingClientRect().width / 4;
   settings.strokeWidth = 2 / settings.r;
   settings.max = Math.max(window.innerHeight, window.innerWidth) / settings.r;
+  settings.angle = settings.angle ?? Math.PI / 3;
+  settings.showAnnotations = settings.showAnnotations ?? true;
   settings.mouseDown = false;
 }
+
+const lblAngleRad = document.querySelector("#lblAngleRad");
+const lblAngleDeg = document.querySelector("#lblAngleDeg");
+const lblSin = document.querySelector("#lblSin");
+const lblCos = document.querySelector("#lblCos");
+const lblTan = document.querySelector("#lblTan");
+const lblCsc = document.querySelector("#lblCsc");
+const lblSec = document.querySelector("#lblSec");
+const lblCot = document.querySelector("#lblCot");
 
 function line(coords, colour = c.main, width = 1) {
   if (coords.includes(NaN) || coords.includes(Infinity) || coords.includes(-Infinity)) return;
   const [x1, y1, x2, y2] = coords;
-  // const [x1, y1, x2, y2] = coords.map((n) => {
-  //   if (isNaN(n)) return 0;
-  //   if (n === Infinity) return 1000000000;
-  //   if (n === -Infinity) return -1000000000;
-  //   return n;
-  // });
   svg.insertAdjacentHTML(
     "afterbegin",
     `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="fill: none; stroke: ${colour}; stroke-width: ${
@@ -44,9 +49,16 @@ function line(coords, colour = c.main, width = 1) {
   );
 }
 
-function drawCircle(angle = Math.PI / 3) {
-  angle += Math.PI * 2;
-  angle %= Math.PI * 2;
+function annotate(text, x, y, rotation = 0) {
+  if (Math.abs(x) === Infinity || Math.abs(y) === Infinity || isNaN(x) || isNaN(y)) return;
+  const rotateDegs = (-rotation * 180) / Math.PI;
+  svg.insertAdjacentHTML(
+    "beforeend",
+    `<g transform="scale(1,-1) translate(${x}, ${-y})"><text class="annotation-sm" transform="rotate(${rotateDegs})">${text}</text></g>`
+  );
+}
+
+function drawCircle(angle = settings.angle) {
   const sin = Math.sin(angle);
   const cos = Math.cos(angle);
   const tan = Math.tan(angle);
@@ -81,10 +93,20 @@ function drawCircle(angle = Math.PI / 3) {
   line([1, -settings.max, 1, settings.max], c.grey, 0.25);
 
   // annotations
-  svg.insertAdjacentHTML("beforeend", `<text class="annotation-sm" x="${cos / 2}" y="${-sin}">cos</text>`);
+  if (settings.showAnnotations) {
+    annotate("cos", cos / 2, sin);
+    annotate("sin", cos, sin / 2, Math.PI / 2 + (cosAbs > 0 ? Math.PI : 0));
+    annotate("tan", cosAbs, (cosAbs * tan) / 2, Math.PI / 2 + (cosAbs > 0 ? Math.PI : 0));
+    annotate("tan", cos + (sec - cos) / 2, sin / 2, angle - Math.PI / 2 + (sinAbs < 0 ? Math.PI : 0));
+    annotate("cot", (sinAbs * cot) / 2, sinAbs);
+    annotate("cot", cos / 2, sin + (csc - sin) / 2, angle - Math.PI / 2 + (sinAbs < 0 ? Math.PI : 0));
+    annotate("sec", sec / 2, 0);
+    annotate("csc", 0, csc / 2, Math.PI / 2 + (cosAbs < 0 ? Math.PI : 0));
+    annotate("sec", cosAbs / 2, (cosAbs * tan) / 2, angle + (cosAbs < 0 ? Math.PI : 0));
+    annotate("csc", (sinAbs * cot) / 2, sinAbs / 2, angle + (cosAbs < 0 ? Math.PI : 0));
+  }
 
   //angle solid
-  //M0 0 L0.2 0 A0 0 0 1 1 ${cos * 0.2} ${sin * 0.2} C"
   svg.insertAdjacentHTML(
     "afterbegin",
     `<path d="M0.15 0 A0.15 0.15 0 ${angle > Math.PI ? 1 : 0} 1 ${cos * 0.15} ${sin * 0.15}" style="fill: none; stroke: ${
@@ -97,6 +119,8 @@ function drawCircle(angle = Math.PI / 3) {
     "beforeend",
     `<circle cx="${cos}" cy="${sin}" r="${0.05}" style="fill: #220919; stroke: #ffffff; stroke-width: ${settings.strokeWidth / 2}" />`
   );
+
+  updateLabels();
   positionHandle(angle);
 }
 
@@ -111,10 +135,41 @@ function positionHandle(angle) {
   handle.style.top = y + cY + "px";
 }
 
+function updateLabels() {
+  const vertical = settings.angle === Math.PI / 2 || settings.angle === (3 * Math.PI) / 2;
+  const horizontal = settings.angle === 0 || settings.angle === Math.PI || settings.angle === 2 * Math.PI;
+
+  const degrees = (settings.angle * 180) / Math.PI;
+  const sin = Math.sin(settings.angle);
+  const cos = Math.cos(settings.angle);
+  const tan = vertical ? "undef" : Math.tan(settings.angle);
+  const csc = horizontal ? "undef" : 1 / sin;
+  const sec = vertical ? "undef" : 1 / cos;
+  const cot = vertical || horizontal ? "undef" : 1 / tan;
+
+  lblAngleRad.value = roundNum(settings.angle);
+  lblAngleDeg.value = roundNum(degrees);
+  lblSin.textContent = roundNum(sin);
+  lblCos.textContent = roundNum(cos);
+  lblTan.textContent = roundNum(tan);
+  lblCsc.textContent = roundNum(csc);
+  lblSec.textContent = roundNum(sec);
+  lblCot.textContent = roundNum(cot);
+}
+
+function roundNum(n, digits = 5) {
+  if (isNaN(n)) return undefined;
+  const multiplier = 10 ** digits;
+  const rounded = Math.round(n * multiplier);
+  return rounded / multiplier;
+}
+
 handle.addEventListener("mousedown", putMouseDown);
 document.addEventListener("mouseup", putMouseUp);
 document.addEventListener("mousemove", moveMouse);
 window.addEventListener("resize", resize);
+lblAngleRad.addEventListener("change", updateAngleFromRad);
+lblAngleDeg.addEventListener("change", updateAngleFromDeg);
 
 function resize() {
   setSettings();
@@ -129,6 +184,13 @@ function putMouseUp() {
   settings.mouseDown = false;
 }
 
+function setAngle(angle) {
+  if (isNaN(angle)) return;
+  angle += Math.PI * 2;
+  angle %= Math.PI * 2;
+  settings.angle = angle;
+}
+
 function moveMouse(e) {
   if (!settings.mouseDown) return;
   const cX = window.innerWidth / 2;
@@ -139,8 +201,24 @@ function moveMouse(e) {
 
   const angleOffset = x < 0 ? Math.PI : 0;
   const angle = Math.atan(y / x) + angleOffset;
+  setAngle(angle);
 
-  drawCircle(angle);
+  drawCircle();
+}
+
+function updateAngleFromRad(e) {
+  const newAngle = Number(e.target.value);
+  setAngle(newAngle);
+  drawCircle();
+  e.target.blur();
+}
+
+function updateAngleFromDeg(e) {
+  const newAngle = Number(e.target.value);
+  const radians = (newAngle * Math.PI) / 180;
+  setAngle(radians);
+  drawCircle();
+  e.target.blur();
 }
 
 drawCircle();
