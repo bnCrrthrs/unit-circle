@@ -1,5 +1,4 @@
 "use strict";
-// svg.innerHTML = `<circle cx="1.25" cy="1.25" r="1" style="fill: #22feb0; stroke: #220919; stroke-width: ${strokeWidth}" />`;
 
 const svg = document.querySelector("#svg-circle");
 const handle = document.querySelector("#handle");
@@ -19,10 +18,13 @@ const c = {
 
 const settings = {};
 setSettings();
+
 function setSettings() {
   settings.sq = Math.min(window.innerHeight, window.innerWidth);
-  settings.r = svg.getBoundingClientRect().width / 4;
+  // settings.r = svg.getBoundingClientRect().width / 4; // orig
+  settings.r = settings.sq / 4;
   settings.strokeWidth = 2 / settings.r;
+
   settings.max = Math.max(window.innerHeight, window.innerWidth) / settings.r;
   settings.angle = settings.angle ?? Math.PI / 3;
   settings.showAnnotations = settings.showAnnotations ?? true;
@@ -37,6 +39,7 @@ const lblTan = document.querySelector("#lblTan");
 const lblCsc = document.querySelector("#lblCsc");
 const lblSec = document.querySelector("#lblSec");
 const lblCot = document.querySelector("#lblCot");
+const inputAnno = document.querySelector("#inputAnnotation");
 
 function line(coords, colour = c.main, width = 1) {
   if (coords.includes(NaN) || coords.includes(Infinity) || coords.includes(-Infinity)) return;
@@ -168,8 +171,27 @@ handle.addEventListener("mousedown", putMouseDown);
 document.addEventListener("mouseup", putMouseUp);
 document.addEventListener("mousemove", moveMouse);
 window.addEventListener("resize", resize);
+lblAngleRad.addEventListener("click", selectInput);
+lblAngleDeg.addEventListener("click", selectInput);
 lblAngleRad.addEventListener("change", updateAngleFromRad);
 lblAngleDeg.addEventListener("change", updateAngleFromDeg);
+inputAnno.addEventListener("change", toggleAnnotations);
+
+handle.addEventListener("touchstart", touchMouseDown);
+document.addEventListener("touchend", putMouseUp);
+document.addEventListener("touchcancel", putMouseUp);
+document.addEventListener("touchmove", touchMove);
+
+function touchMouseDown(e) {
+  e.preventDefault();
+  putMouseDown();
+}
+
+function touchMove(e) {
+  if (!e.target.closest("#handle")) return;
+  const t = e.changedTouches[0];
+  moveMouse(t);
+}
 
 function resize() {
   setSettings();
@@ -221,4 +243,18 @@ function updateAngleFromDeg(e) {
   e.target.blur();
 }
 
+function selectInput(e) {
+  e.target.select();
+}
+
+function toggleAnnotations() {
+  settings.showAnnotations = !settings.showAnnotations;
+  drawCircle();
+}
+
 drawCircle();
+
+// todo
+// inc esc keypress??
+// min-width??
+// srsly refactor / organise

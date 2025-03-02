@@ -54,19 +54,6 @@ body {
   left: 0;
 }
 
-/* #results {
-  position: absolute;
-  display: grid;
-  grid-template-columns: 12rem 12rem;
-  bottom: 0;
-  left: 0;
-  min-width: max-content;
-  margin: 1.2rem;
-  padding: 0.6rem 1.2rem;
-  background-color: #f8fffd;
-  border-radius: 0.8rem;
-} */
-
 .lblName {
   text-align: right;
   font-size: 1.2rem;
@@ -82,10 +69,14 @@ body {
   color: #d3ced1;
 }
 
-/* .annotations {
+.annotations {
+  width: max-content;
   position: absolute;
-  left: 0;
-} */
+  right: 0;
+  bottom: 0;
+  transform: translateX(100%);
+  padding-left: 0.8rem;
+}
 
 .sin-col {
   color: #22feb0;
@@ -124,9 +115,12 @@ body {
 }
 
 .boxInput {
-  display: block;
-  margin-left: 0.4rem;
+  display: inline;
   width: 1.6rem;
+  cursor: pointer;
+}
+
+.show-anno-lbl {
   cursor: pointer;
 }
 
@@ -161,4 +155,28 @@ body {
   alignment-baseline: middle;
   paint-order: stroke;
   user-select: none;
+}
+
+@media (max-width: 429px) {
+  .annotations {
+    left: 0;
+    top: -25%;
+    transform: unset;
+  }
+}
+
+@media (max-height: 380px) {
+  .figures {
+    margin: 0.4rem 0.8rem;
+    padding: 0.4rem 1.2rem 0.2rem 1.2rem;
+  }
+  .lblName {
+    font-size: 1.1rem;
+    padding: 0.1rem;
+  }
+
+  .lblValue {
+    font-size: 1.1rem;
+    padding: 0.1rem 0.2rem;
+  }
 }
