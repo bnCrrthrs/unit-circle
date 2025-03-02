@@ -29,6 +29,7 @@ function setSettings() {
   settings.angle = settings.angle ?? Math.PI / 3;
   settings.showAnnotations = settings.showAnnotations ?? true;
   settings.mouseDown = false;
+  settings.touch = null;
 }
 
 const lblAngleRad = document.querySelector("#lblAngleRad");
@@ -177,20 +178,46 @@ lblAngleRad.addEventListener("change", updateAngleFromRad);
 lblAngleDeg.addEventListener("change", updateAngleFromDeg);
 inputAnno.addEventListener("change", toggleAnnotations);
 
-handle.addEventListener("touchstart", touchMouseDown);
-document.addEventListener("touchend", putMouseUp);
-document.addEventListener("touchcancel", putMouseUp);
-document.addEventListener("touchmove", touchMove);
+document.addEventListener("touchstart", handleStart, { passive: false });
+document.addEventListener("touchend", stopTouch);
+document.addEventListener("touchcancel", stopTouch);
+document.addEventListener("touchmove", touchMove, { passive: false });
 
-function touchMouseDown(e) {
-  e.preventDefault();
-  putMouseDown();
+function handleStart(e) {
+  if (!e.target.closest("#handle")) return console.log("no handle");
+  // e.preventDefault();
+  const t = e.changedTouches[0];
+  settings.touch = t.identifier;
 }
 
 function touchMove(e) {
-  if (!e.target.closest("#handle")) return;
-  const t = e.changedTouches[0];
-  moveMouse(t);
+  e.preventDefault();
+  if (settings.touch === null) return;
+  const touches = e.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const t = touches[i];
+    if (t.identifier === settings.touch) {
+      const cX = window.innerWidth / 2;
+      const cY = window.innerHeight / 2;
+
+      const x = t.clientX - cX;
+      const y = -(t.clientY - cY);
+
+      const angleOffset = x < 0 ? Math.PI : 0;
+      const angle = Math.atan(y / x) + angleOffset;
+      setAngle(angle);
+
+      drawCircle();
+    }
+  }
+  // if (!e.target.closest("#handle")) return;
+  // const t = e.changedTouches[0];
+  // moveMouse(t);
+}
+
+function stopTouch(e) {
+  settings.touch = null;
+  drawCircle();
 }
 
 function resize() {
@@ -255,6 +282,7 @@ function toggleAnnotations() {
 drawCircle();
 
 // todo
+// numeric keyboard
 // inc esc keypress??
-// min-width??
+// min-width?? // zoom
 // srsly refactor / organise

@@ -24,11 +24,11 @@ body {
   top: 0;
   left: 0;
   transform: translate(-50%, -50%);
-  width: 2rem;
-  height: 2rem;
+  width: 6rem;
+  height: 6rem;
   border: none;
   background-color: none;
-  border-radius: 1rem;
+  border-radius: 6rem;
   z-index: 1;
 }
 
