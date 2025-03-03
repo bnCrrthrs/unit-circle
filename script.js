@@ -20,7 +20,8 @@ const settings = {};
 setSettings();
 
 function setSettings() {
-  settings.sq = Math.min(window.innerHeight, window.innerWidth);
+  // settings.sq = Math.min(window.innerHeight, window.innerWidth);
+  settings.sq = svg.getBoundingClientRect().width;
   // settings.r = svg.getBoundingClientRect().width / 4; // orig
   settings.r = settings.sq / 4;
   settings.strokeWidth = 2 / settings.r;

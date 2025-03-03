@@ -142,7 +142,7 @@ body {
 
 #svg-circle {
   /* transform: scale(1, -1); */
-  width: min(100vw, 100vh);
+  width: min(100vw, 100vh, 80rem);
   aspect-ratio: 1;
   overflow: visible;
 }
