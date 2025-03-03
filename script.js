@@ -135,8 +135,14 @@ function positionHandle(angle) {
   const x = settings.r * Math.cos(angle);
   const y = settings.r * Math.sin(angle);
 
-  handle.style.left = x + cX + "px";
-  handle.style.top = y + cY + "px";
+  const hWidth = handle.getBoundingClientRect().width;
+  const hHeight = handle.getBoundingClientRect().height;
+  // console.log(hWidth, hHeight);
+
+  handle.style.left = `${x + cX - hWidth / 2}px`;
+  handle.style.top = `${y + cY - hHeight / 2}px`;
+  // handle.style.left = x + cX + "px";
+  // handle.style.top = y + cY + "px";
 }
 
 function updateLabels() {
@@ -184,7 +190,7 @@ document.addEventListener("touchcancel", stopTouch);
 document.addEventListener("touchmove", touchMove, { passive: false });
 
 function handleStart(e) {
-  if (!e.target.closest("#handle")) return console.log("no handle");
+  if (!e.target.closest("#handle")) return;
   // e.preventDefault();
   const t = e.changedTouches[0];
   settings.touch = t.identifier;
@@ -282,7 +288,7 @@ function toggleAnnotations() {
 drawCircle();
 
 // todo
-// numeric keyboard
 // inc esc keypress??
 // min-width?? // zoom
 // srsly refactor / organise
+// pwa
