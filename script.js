@@ -130,20 +130,15 @@ function drawCircle(angle = settings.angle) {
 }
 
 function positionHandle(angle) {
-  const cX = window.innerWidth / 2;
-  const cY = window.innerHeight / 2;
+  const { width, height } = document.body.getBoundingClientRect();
+  const cX = width / 2;
+  const cY = height / 2;
 
   const x = settings.r * Math.cos(angle);
   const y = settings.r * Math.sin(angle);
 
-  const hWidth = handle.getBoundingClientRect().width;
-  const hHeight = handle.getBoundingClientRect().height;
-  // console.log(hWidth, hHeight);
-
-  handle.style.left = `${x + cX - hWidth / 2}px`;
-  handle.style.top = `${y + cY - hHeight / 2}px`;
-  // handle.style.left = x + cX + "px";
-  // handle.style.top = y + cY + "px";
+  handle.style.left = `${cX + x}px`;
+  handle.style.top = `${cY - y}px`;
 }
 
 function updateLabels() {
