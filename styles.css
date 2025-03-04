@@ -16,6 +16,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #220919;
+}
+
+#svg-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #220919;
+  transform: scale(1, -1);
+}
+
+#svg-circle {
+  /* transform: scale(1, -1); */
+  width: min(100vw, 100vh, 80rem);
+  aspect-ratio: 1;
+  overflow: visible;
 }
 
 #handle {
@@ -24,12 +43,12 @@ body {
   /* top: 0;
   left: 0; */
   transform: translate(-50%, -50%);
-  /* user-select: none; */
+  user-select: none;
   width: 6rem;
   height: 6rem;
   border: none;
   background-color: white;
-  opacity: 0.1;
+  opacity: 0.05;
   border-radius: 6rem;
   z-index: 1;
   margin: 0;
@@ -72,34 +91,6 @@ body {
   color: #d3ced1;
 }
 
-.annotations {
-  width: max-content;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  transform: translateX(100%);
-  padding-left: 0.8rem;
-}
-
-.sin-col {
-  color: #22feb0;
-}
-.cos-col {
-  color: #ff4870;
-}
-.tan-col {
-  color: #fde74c;
-}
-.csc-col {
-  color: #02a9ea;
-}
-.sec-col {
-  color: #ff66b3;
-}
-.cot-col {
-  color: #eea243;
-}
-
 .lblInput {
   display: block;
   border: none;
@@ -127,29 +118,36 @@ body {
   cursor: pointer;
 }
 
-/**********/
-
-#svg-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100vh;
-  background-color: #220919;
-  transform: scale(1, -1);
+.sin-col {
+  color: #22feb0;
+}
+.cos-col {
+  color: #ff4870;
+}
+.tan-col {
+  color: #fde74c;
+}
+.csc-col {
+  color: #02a9ea;
+}
+.sec-col {
+  color: #ff85c2;
+}
+.cot-col {
+  color: #eea243;
 }
 
-#svg-circle {
-  /* transform: scale(1, -1); */
-  width: min(100vw, 100vh, 80rem);
-  aspect-ratio: 1;
-  overflow: visible;
+.annotations {
+  width: max-content;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateX(100%);
+  padding-left: 0.8rem;
 }
 
 .annotation-sm {
   font-family: serif;
-  /* line-weight: 0.01; */
   stroke: #220919;
   stroke-width: 0.005rem;
   fill: white;
