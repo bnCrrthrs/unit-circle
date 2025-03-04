@@ -17,6 +17,7 @@ body {
   align-items: center;
   justify-content: center;
   background-color: #220919;
+  overflow: hidden;
 }
 
 #svg-container {
@@ -57,7 +58,6 @@ body {
 }
 
 .figures {
-  position: absolute;
   display: grid;
   min-width: max-content;
   margin: 1.2rem;
@@ -67,12 +67,14 @@ body {
 }
 
 #figures-angles {
+  position: absolute;
   grid-template-columns: 6rem 8rem;
   top: 0;
   left: 0;
 }
 
 #figures-main {
+  position: fixed;
   grid-template-columns: 6rem 8rem 6rem 8rem;
   bottom: 0;
   left: 0;
