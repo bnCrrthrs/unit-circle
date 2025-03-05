@@ -202,11 +202,12 @@ handle.addEventListener("mousedown", putMouseDown);
 document.addEventListener("mouseup", putMouseUp);
 document.addEventListener("mousemove", moveMouse);
 window.addEventListener("resize", resize);
-lblAngleRad.addEventListener("click", selectInput);
-lblAngleDeg.addEventListener("click", selectInput);
+lblAngleRad.addEventListener("focus", selectInput);
+lblAngleDeg.addEventListener("focus", selectInput);
 lblAngleRad.addEventListener("change", updateAngleFromRad);
 lblAngleDeg.addEventListener("change", updateAngleFromDeg);
 inputAnno.addEventListener("change", toggleAnnotations);
+document.addEventListener("keydown", handleKeypress);
 
 document.addEventListener("touchstart", handleStart, { passive: false });
 document.addEventListener("touchend", stopTouch);
@@ -286,7 +287,8 @@ function updateAngleFromRad(e) {
   const newAngle = Number(e.target.value);
   setAngle(newAngle);
   drawCircle();
-  e.target.blur();
+  // e.target.blur();
+  // document.activeElement.blur();
 }
 
 function updateAngleFromDeg(e) {
@@ -294,7 +296,16 @@ function updateAngleFromDeg(e) {
   const radians = (newAngle * Math.PI) / 180;
   setAngle(radians);
   drawCircle();
-  e.target.blur();
+  // e.target.blur();
+  // document.activeElement.blur();
+}
+
+function handleKeypress({ key }) {
+  switch (key) {
+    case "Enter":
+    case "Escape":
+      document.activeElement.blur();
+  }
 }
 
 function selectInput(e) {
