@@ -67,9 +67,19 @@ function drawCircle(angle = settings.angle) {
   const dashArr1 = `stroke-dasharray: ${settings.strokeWidth * 8} ${settings.strokeWidth * 12};`;
   const dashArr2 = `stroke-dasharray: ${settings.strokeWidth * 8} ${settings.strokeWidth * 12};`;
   const dashOff = `stroke-dashoffset: ${settings.strokeWidth * 10};`;
+  const secEndY = cosAbs * tan;
+  const cscEndX = sinAbs * cot;
 
-  line([0, 0, cosAbs * 1, cosAbs * tan], c.pink, 0.5, dashArr1); // outer sec dashed
-  line([0, 0, sinAbs * cot, sinAbs * 1], c.blue, 0.5, dashArr2 + dashOff); //outer csc dashed
+  const secInsetX = cosAbs - cos * settings.strokeWidth * 4;
+  const secInsetY = secEndY - sin * settings.strokeWidth * 4;
+  const cscInsetX = cscEndX - cos * settings.strokeWidth * 4;
+  const cscInsetY = sinAbs - sin * settings.strokeWidth * 4;
+  line([secInsetX, secInsetY, cosAbs, secEndY], c.pink, 0.5); // outer sec inset
+  line([cscEndX, sinAbs, cscInsetX, cscInsetY], c.blue, 0.5); //outer csc inset
+
+  line([0, 0, cosAbs, secEndY], c.pink, 0.5, dashArr1); // outer sec dashed
+  line([0, 0, cscEndX, sinAbs], c.blue, 0.5, dashArr2 + dashOff); //outer csc dashed
+
   // line([0, 0, cosAbs * 1, cosAbs * tan], c.pink, 0.5); // outer sec solid
   // line([0, 0, sinAbs * cot, sinAbs * 1], c.blue, 0.5); //outer solid
 
@@ -104,6 +114,12 @@ function drawCircle(angle = settings.angle) {
     annotate("tan", cos + (sec - cos) / 2, sin / 2, angle - Math.PI / 2 + (sinAbs < 0 ? Math.PI : 0));
     annotate("cos", cos / 2, sin);
     annotate("sin", cos, sin / 2, Math.PI / 2 + (cosAbs > 0 ? Math.PI : 0));
+
+    // drawHandle
+    svg.insertAdjacentHTML(
+      "beforeend",
+      `<circle cx="${cos}" cy="${sin}" r="${0.04}" style="fill: #220919; stroke: #ffffff; stroke-width: ${settings.strokeWidth / 2}" />`
+    );
   }
 
   //angle solid
@@ -115,12 +131,6 @@ function drawCircle(angle = settings.angle) {
     <path d="M0.15 0 A0.15 0.15 0 ${angle > Math.PI ? 1 : 0} 1 ${cos * 0.15} ${sin * 0.15}" style="fill: none; stroke: ${
       c.purple
     }; stroke-width: ${settings.strokeWidth}" />`
-  );
-
-  // drawHandle
-  svg.insertAdjacentHTML(
-    "beforeend",
-    `<circle cx="${cos}" cy="${sin}" r="${0.05}" style="fill: #220919; stroke: #ffffff; stroke-width: ${settings.strokeWidth / 2}" />`
   );
 
   updateLabels();
